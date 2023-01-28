@@ -1,0 +1,12 @@
+DirectoryIndex index.php
+
+RewriteEngine On
+RewriteBase /
+# NOT needed unless you're using mod_alias to redirect
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d 
+
+RewriteRule ^(.*)$ index.php [QSA]
+# Direct all requests to index.php
+
