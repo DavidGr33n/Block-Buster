@@ -1,6 +1,6 @@
 <?php
 
-namespace BlockBuster;
+namespace BlockBuster\app;
 
 /**
  * Description of router
@@ -32,7 +32,7 @@ class Router {
     
     public function run(): void {
         
-        $requestUrl = parse_url($_SERVER['REQUEST_URI']);
+        $requestUrl = parse_url( $this->GetSanitizedUrl() );
         $requestPath = $requestUrl['path'];
         $method = $_SERVER['REQUEST_METHOD'];
         
@@ -67,7 +67,14 @@ class Router {
     }
 
 
-
+    protected function GetSanitizedUrl(): string {
+        
+        $rawUrl = $_SERVER['REQUEST_URI'];
+        $rawUrl = urldecode($rawUrl);
+        
+        return filter_var($rawUrl, FILTER_SANITIZE_URL);
+        
+    }
 
     private function addHandler(string $path, string $method ,$handler){
         

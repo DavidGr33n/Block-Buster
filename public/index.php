@@ -2,10 +2,10 @@
 
 require '../src/router.php';
 
-use BlockBuster\Router;
+use BlockBuster\app\Router;
 
 
-$router = new BlockBuster\Router();
+$router = new BlockBuster\app\Router();
 
 $router->get('/', function(){
     
