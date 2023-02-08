@@ -9,10 +9,22 @@
  */
 class Main_Controller extends BlockBuster\app\Controller {
     
-    public static $ViewName = 'Main';
+    //here you set the name of your view for this controller
+    //and it needs to be the same as the name of the folder in your /src/views/..your folder name../
+    const ViEW_NAME = 'Main';  
+    
+    public $VIEWER;
+    
+    
+    public function __construct() {
+        
+        $this->VIEWER = new BlockBuster\app\Viewer( self::ViEW_NAME );
+    }
+    
     
     public function index(){
-        echo 'Home Page!!!';
+        
+        $this->VIEWER->RenderFile( 'home.php' , array('a' => 10) );
     }
     
     public function test(){
