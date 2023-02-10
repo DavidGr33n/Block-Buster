@@ -15,7 +15,11 @@ class Viewer {
     
     public $viewName;
     public $thisViewDir;
-    
+    public $frameFile;
+    public $CONTENT;
+    public $ContentParms;
+
+
     public function __construct($viewName) {
         
         $this->viewName = $viewName;
@@ -28,15 +32,15 @@ class Viewer {
         }
     }
     
-    public function RenderFile( $fileName , $parms = array() ){
+    public function RenderFile( $fileName , $PARAMS = array() ){
         
         $filePath = $this->thisViewDir . $fileName;
         
         if( file_exists( $filePath ) ){
             
-            if( is_array($parms) && !empty($parms) ){
+            if( is_array($PARAMS) && !empty($PARAMS) ){
                 
-                foreach ($parms as $key => $value) {
+                foreach ($PARAMS as $key => $value) {
                     
                     $$key = $value;
                 } 
@@ -46,12 +50,53 @@ class Viewer {
         }
     }
     
-    public function SetViewFrame(){
+    public function SetViewFrame( $fileName ){
         
+        $filePath = $this->thisViewDir . $fileName;
         
+        if( file_exists( $filePath ) ){
+            
+            $this->frameFile = $fileName;
+        }
     }
     
-    public function RenderView() {
+    public function RenderViewFrame( $content , $PARAMS = array() ) {
         
+        $this->CONTENT = $content;  //sets the content for the render content function
+        
+        
+        /*
+         * if $PARAMS is not empty array than set the {{this}}->$ContentParms
+         * else  {{this}}->$ContentParms remains NULL.
+         */
+        if( !empty( $PARAMS ) ){
+            
+            $this->ContentParms = $PARAMS;
+        }
+        
+        
+        //Actuate the frame
+        $this->RenderFile( $this->frameFile , $PARAMS );
+    }
+    
+    
+    public function RenderContent() {
+        
+        $extensions = array( '.php' , '.PHP' , '.html' , '.HTML');
+        $content = $this->CONTENT;
+        
+        
+        foreach ($extensions as $ext) {
+            
+            if( str_ends_with($content, $ext) ){
+                
+                $PARAMS = ( $this->ContentParms !== null ) ? $this->ContentParms : array();
+                
+                $this->RenderFile( $content , $PARAMS );
+                return;
+            }
+        }
+        
+        echo $content;
     }
 }

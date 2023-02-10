@@ -82,10 +82,10 @@ class Router {
             
             if( class_exists($className) && method_exists( $className , $classMethod) ){
                 
-                $this->Controller = new $this->ControllerInfo['Class'];
-                
                 //init the Controller base class and give it acess to the Router object.
-                Controller::$router = $this;    
+                Controller::$router = $this;
+                
+                $this->Controller = new $this->ControllerInfo['Class'];
                 
                 call_user_func( array( $this->Controller , $classMethod ) );
                 

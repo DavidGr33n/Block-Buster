@@ -19,12 +19,14 @@ class Main_Controller extends BlockBuster\app\Controller {
     public function __construct() {
         
         $this->VIEWER = new BlockBuster\app\Viewer( self::ViEW_NAME );
+        
+        $this->VIEWER->SetViewFrame( 'frame.php' );
     }
     
     
     public function index(){
         
-        $this->VIEWER->RenderFile( 'home.php' , array('a' => 10) );
+        $this->VIEWER->RenderViewFrame( 'home.php' , array('a' => 10) );
     }
     
     public function test(){
