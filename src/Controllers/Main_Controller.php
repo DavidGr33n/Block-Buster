@@ -1,7 +1,5 @@
 <?php
 
-
-
 /**
  * The Main site controller
  *
@@ -25,6 +23,8 @@ class Main_Controller extends BlockBuster\app\Controller {
     
     
     public function index(){
+        
+        $db = BlockBuster\app\DB_Connect::GetInstance();
         
         $this->VIEWER->RenderViewFrame( 'home.php' , array('a' => 10) );
     }

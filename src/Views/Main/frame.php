@@ -9,9 +9,15 @@
     <body>
         <?php
          $this->RenderFile('nav.php' , $PARAMS );
+        ?>
         
-         $this->RenderContent();
-         
+        <div id="content-wraper"> 
+            <?php
+                $this->RenderContent();
+            ?>
+        </div>
+        
+        <?php
          $this->RenderFile('footer.php' , $PARAMS );
         ?>
         

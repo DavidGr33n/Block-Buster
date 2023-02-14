@@ -3,6 +3,36 @@
     Author     : david
 */
 
+html  {
+    height: 100%;
+}
+
+
 body{
-    background: lightgray;
+    background: #a6d3d6;
+    margin: 0;
+    height: calc(100% - 158px);
+    
+}
+
+nav#mainNav{
+    width: 100%;
+    position: fixed;
+    top: 0;
+    height: 148px;
+    background-color: #feca52;
+}
+
+#content-wraper{
+    margin: 0 auto;
+    margin-top: 148px;
+    width: 80%;
+    background-color: #f3f3f3;
+    height: 100%;
+    padding: 5px;
+}
+
+#logo{
+    display: inline-block;
+    margin-left: 20px;
 }
