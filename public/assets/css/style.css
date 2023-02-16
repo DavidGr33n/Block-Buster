@@ -3,8 +3,19 @@
     Author     : david
 */
 
+@font-face {
+  font-family: JosefinSans-Medium;
+  src: url(../fonts/JosefinSans-Medium.ttf);
+}
+
+@font-face {
+  font-family: JosefinSans-Regular;
+  src: url(../fonts/JosefinSans-Regular.ttf);
+}
+
 html  {
     height: 100%;
+    font-family: JosefinSans-Regular;
 }
 
 
@@ -15,13 +26,11 @@ body{
     
 }
 
-nav#mainNav{
-    width: 100%;
-    position: fixed;
-    top: 0;
-    height: 148px;
-    background-color: #feca52;
+a , a:visited{
+    color: black;
+    text-decoration: none;
 }
+
 
 #content-wraper{
     margin: 0 auto;
@@ -32,7 +41,56 @@ nav#mainNav{
     padding: 5px;
 }
 
+nav#mainNav{
+    width: 100%;
+    position: fixed;
+    top: 0;
+    height: 148px;
+    background-color: #feca52;
+}
+
+#nav-wrraper{
+    width: 80%;
+    margin: 0 auto;
+    height: 100%;
+}
+
 #logo{
     display: inline-block;
     margin-left: 20px;
+    float: left;
+}
+
+.nav-item{
+    float: left;
+    height: 100%;
+}
+
+.nav-item a{
+    color: #3d3d3c;
+    display: inline-block;
+    font-size: 30px;
+    line-height: 128px;
+    vertical-align: middle;
+    padding: 10px;
+    margin-left: 40px;
+    font-family: JosefinSans-Medium;
+}
+
+.nav-item a:hover{
+    background-color: #e8a614;
+    color: white;
+}
+
+#categories-wrraper{
+    padding: 30px;
+}
+
+.category-option{
+    display: inline-block;
+    font-family: JosefinSans-Medium;
+    font-size: 35px;
+    padding: 10px;
+    margin: 60px;
+    border: 1px solid;
 }

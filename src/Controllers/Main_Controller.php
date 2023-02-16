@@ -26,7 +26,33 @@ class Main_Controller extends BlockBuster\app\Controller {
         
         $db = BlockBuster\app\DB_Connect::GetInstance();
         
-        $this->VIEWER->RenderViewFrame( 'home.php' , array('a' => 10) );
+        $this->VIEWER->RenderViewFrame( 'home.php');
+    }
+    
+    public function GetMovies(){
+        
+        $db = BlockBuster\app\DB_Connect::GetInstance();
+        
+        $sql = "SELECT film.* , category.name "     //selects all films with their category names
+             . "FROM film JOIN film_category "
+             . "ON film.film_id = film_category.film_id "
+             . "JOIN category ON film_category.category_id = category.category_id "
+             . "ORDER BY `film`.`film_id` ASC ";
+        
+        $movies = $db->conn->query($sql , PDO::FETCH_ASSOC)->fetchAll();
+        
+        $this->VIEWER->RenderViewFrame( 'movies.php' , $movies );
+    }
+    
+    public function GetCategories(){
+        
+        $db = BlockBuster\app\DB_Connect::GetInstance();
+        
+        $sql = "SELECT name FROM category";
+        
+        $categories = $db->conn->query($sql , PDO::FETCH_ASSOC)->fetchAll();
+        
+        $this->VIEWER->RenderViewFrame( 'categories.php' , $categories );
     }
     
     public function test(){

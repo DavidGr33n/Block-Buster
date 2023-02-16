@@ -12,6 +12,10 @@ $router = new BlockBuster\app\Router();
 
 $router->get('/', 'Main@index' );
 
+$router->get('/movies', 'Main@GetMovies' );
+
+$router->get('/categories', 'Main@GetCategories' );
+
 
 $router->get('/about', function(){
     
