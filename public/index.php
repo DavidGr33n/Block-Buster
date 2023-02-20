@@ -8,6 +8,10 @@ require_once  '../src/DB_Connect.php';
 use BlockBuster\app\Router;
 
 
+define("DOMAIN", "http://www.buster.dev/");
+
+
+
 $router = new BlockBuster\app\Router();
 
 $router->get('/', 'Main@index' );
@@ -16,17 +20,12 @@ $router->get('/movies', 'Main@GetMovies' );
 
 $router->get('/categories', 'Main@GetCategories' );
 
+$router->get('/categories/{{category}}', 'Main@GetFilmsCategory' );
 
-$router->get('/about', function(){
-    
-    echo 'about us';
-});
+$router->get('/mostrented', 'Main@GetMostRentedMovies');
 
 
-$router->get('/test', 'Main@test');
-
-
-$router->Handler404( function(){
+$router->setHandler404( function(){
     echo'<h1>Not Found Page!!</h1>';
 });
 

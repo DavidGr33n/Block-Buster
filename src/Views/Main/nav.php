@@ -2,7 +2,7 @@
     <div id="nav-wrraper">
         <div id="logo"> 
             <a href="/">
-                <img src="assets/img/logo.png" alt="Buster Logo" width="148px" height="148px"> 
+                <img src="<?php echo $this->assets('img/logo.png'); ?>" alt="Buster Logo" width="148px" height="148px"> 
             </a>            
         </div>
 

@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Block Buster</title>
-        <link rel="stylesheet" href="assets/css/style.css" />
+        <link rel="stylesheet" href="<?php echo $this->assets('css/style.css'); ?>" />
     </head>
     <body>
         <?php

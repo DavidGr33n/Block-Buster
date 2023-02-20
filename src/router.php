@@ -15,6 +15,7 @@ class Router {
     public $requestPath;
     public $ControllerInfo;
     public $Controller;
+    public $urlParm = false;
 
 
     public function get(string $path, $handler): void {
@@ -42,7 +43,18 @@ class Router {
         
         $callBack = null;
         
+        
         foreach ($this->handlers as $config){
+            
+            if( isset( $config['isParm'] ) && $config['isParm'] === true ){
+                
+                if( $this->isRequestParmUrl( $config ) ){
+                    
+                    $callBack = $config['handler'];
+                    
+                    break;
+                }
+            }
             
             
             if($config['path'] === $this->requestPath && $this->method === $config['method']){
@@ -87,7 +99,15 @@ class Router {
                 
                 $this->Controller = new $this->ControllerInfo['Class'];
                 
-                call_user_func( array( $this->Controller , $classMethod ) );
+                if( $this->urlParm !== false ){ //if urlParm is set (!== false) than pass the parm to the method
+                    
+                    call_user_func( array( $this->Controller , $classMethod ) , $this->urlParm );
+                } else {
+                    
+                    call_user_func( array( $this->Controller , $classMethod ) );
+                }
+                
+                
                 
             }else{
                 
@@ -138,7 +158,46 @@ class Router {
     }
     
     
-    public function Handler404( $callBack ):void{
+    protected function isRequestParmUrl( $conf ) {
+        
+        $request = $this->requestPath;
+        
+        $PathArr = explode( '/' , $request);
+        $basePath = '/';    
+        $urlParm = end($PathArr);
+        
+        
+        $numOfPaths = count($PathArr);
+        $numOfPaths--;
+        
+        
+        $i = 0;
+            
+        if( $PathArr[0] === '' ){
+                
+                $i = 1; 
+        }
+            
+        for ($i ; $i < $numOfPaths; $i++){
+                
+            $basePath .= $PathArr[$i] . '/';
+        }  
+        
+        $basePath .= '{{}}';
+        
+        if( $conf['path'] === $basePath ){
+            
+            
+            $this->urlParm = $urlParm;
+            
+            return true;
+        }
+        
+        return false;
+    }
+
+
+    public function setHandler404( $callBack ):void{
         
         $this->notFoundHandler = $callBack;
     }
@@ -155,6 +214,56 @@ class Router {
 
     private function addHandler(string $path, string $method ,$handler){
         
+        
+        $isParmUrl = false;
+        
+        if( str_contains($path, '{{') && str_contains($path, '}}') ){
+            
+            $startOfBrackets = strpos($path, '{{');
+            $endOfBrackets = strpos($path, '}}');
+            
+            $strBeforBrackets = substr( $path , $startOfBrackets - 1 , 1);
+            
+            
+            if( $strBeforBrackets !== '/' && $startOfBrackets !== 0 ){
+                return;  //it is not a valid routing with parm "{{something}}".
+            }
+            
+            
+            $PathArr = explode( '/' , $path);
+            $basePath = '/';
+            
+            $urlParm = end($PathArr);
+            $urlParm = str_replace( array( '{{' , '}}' ) , '' , $urlParm);
+            
+            
+            $numOfPaths = count($PathArr);
+            $numOfPaths--;
+            
+            
+            $i = 0;
+            
+            if( $PathArr[0] === '' ){
+                
+                $i = 1; 
+            }
+            
+            for ($i ; $i < $numOfPaths; $i++){
+                
+                $basePath .= $PathArr[$i] . '/';
+            }
+            
+            if( $basePath !== '/' ){
+                
+                $basePath = rtrim( $basePath, '/');
+            }
+            
+            
+            $path = $basePath . '/{{}}';
+            $isParmUrl = true;
+        }
+        
+        
         $this->handlers[$method. $path] = [
             
             'path' => $path,
@@ -162,6 +271,12 @@ class Router {
             'handler' => $handler
         ];
         
+        
+        if( $isParmUrl ){
+            
+            $this->handlers[$method. $path]['isParm'] = true;
+            $this->handlers[$method. $path]['urlParm'] = $urlParm;
+        }
     }
     
 }

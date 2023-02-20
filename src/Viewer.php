@@ -99,4 +99,9 @@ class Viewer {
         
         echo $content;
     }
+    
+    public function assets( $assetPath ){ //path inside the assets folder
+        
+        return DOMAIN. 'assets/' . $assetPath;
+    }
 }
