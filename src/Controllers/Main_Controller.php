@@ -10,6 +10,7 @@ class Main_Controller extends BlockBuster\app\Controller {
     //here you set the name of your view for this controller
     //and it needs to be the same as the name of the folder in your /src/views/..your folder name../
     const ViEW_NAME = 'Main';  
+    const PAGINATION_STEP = 15;   //the number of elemnts to show per page
     
     public $VIEWER;
     
@@ -32,17 +33,88 @@ class Main_Controller extends BlockBuster\app\Controller {
     public function GetMovies(){
         
         $db = BlockBuster\app\DB_Connect::GetInstance();
+        $page_num = $this->getPageNum();
+        $pagination = null;
         
-        $sql = "SELECT film.* , category.name "     //selects all films with their category names
+        $sql = "SELECT film.* , category.name AS catName "     //selects all films with their category names
              . "FROM film JOIN film_category "
              . "ON film.film_id = film_category.film_id "
              . "JOIN category ON film_category.category_id = category.category_id "
              . "ORDER BY `film`.`film_id` ASC ";
         
+        
+        if( $page_num !== false ){
+            
+            $sql .= "LIMIT " . self::PAGINATION_STEP 
+                  . " OFFSET " . ( ($page_num - 1) * self::PAGINATION_STEP );
+            
+        }else{
+            
+            $sql .= "LIMIT " . self::PAGINATION_STEP;
+            $page_num = 1;
+        }
+        
+        
+        $films_count = $this->countFilms();
+            
+        if( $films_count > 0 ){
+                
+            $total_pages = ceil( $films_count/self::PAGINATION_STEP ); //Rounds up floats to get total pages count
+            
+            if( $total_pages > 1 && $page_num <= $total_pages ){
+                
+                //set next page and previous page for the pagniation feature
+                $next_page = ($page_num + 1) > $total_pages ? null : $page_num + 1;
+                
+                $previous_page = ($page_num - 1) < 1 ? null : $page_num - 1;
+                
+                $pagination = [ 'next' => $next_page ,
+                                'previous' => $previous_page, 
+                                'this' => $page_num,
+                                'total' => $total_pages   
+                ];
+            }
+        }
+        
+        
         $movies = $db->conn->query($sql , PDO::FETCH_ASSOC)->fetchAll();
+        
+        
+        if( $pagination !== null ){
+            
+            $movies['pagination'] = $pagination;
+        }
+        
         
         $this->VIEWER->RenderViewFrame( 'movies.php' , $movies );
     }
+    
+    
+    public function GetMovieById( $id ){
+        
+        $db = BlockBuster\app\DB_Connect::GetInstance();
+        
+        $sql = "SELECT film.* , category.name AS catName FROM film JOIN film_category "
+             . "ON film.film_id = film_category.film_id "
+             . "JOIN category ON film_category.category_id = category.category_id "
+             . "WHERE film.film_id = :film_id ";
+        
+        $sth = $db->conn->prepare( $sql );
+        if( $sth->execute( [ 'film_id' => $id ] ) ){
+            
+            $movie = $sth->fetchAll( PDO::FETCH_ASSOC );
+            
+            
+            if( empty($movie) ){
+                
+                header("Location:" . DOMAIN . "movies");
+                exit();
+            }
+        }
+        
+       $this->VIEWER->RenderViewFrame( 'movies.php' , $movie ); 
+    }
+    
     
     public function GetCategories(){
         
@@ -54,6 +126,7 @@ class Main_Controller extends BlockBuster\app\Controller {
         
         $this->VIEWER->RenderViewFrame( 'categories.php' , $categories );
     }
+    
     
     public function GetFilmsCategory( $category ){
         
@@ -100,7 +173,7 @@ class Main_Controller extends BlockBuster\app\Controller {
         
         $db = BlockBuster\app\DB_Connect::GetInstance();
         
-        $sql = 'SELECT COUNT(rental.rental_id) AS rentCount , film.title , inventory.film_id '
+        $sql = 'SELECT inventory.film_id , film.title , COUNT(rental.rental_id) AS rentCount '
              . 'FROM rental JOIN inventory ON rental.inventory_id = inventory.inventory_id '
              . 'JOIN film ON inventory.film_id = film.film_id '
              . 'GROUP BY inventory.film_id, film.title '
@@ -111,6 +184,48 @@ class Main_Controller extends BlockBuster\app\Controller {
         $top10moviesRent = $sth->fetchAll();
         
         $this->VIEWER->RenderViewFrame( 'mostRented.php' , $top10moviesRent  );
+    }
+    
+    public function getPageNum() {
+        
+        $query_string_parms = self::$router->query_parms_arr;
+        
+        
+        if( $query_string_parms !== null && array_key_exists('p', $query_string_parms) ){
+            
+            $pageNUm = intval( $query_string_parms['p'] );
+            
+            if( $pageNUm > 0 ){
+                
+                return $pageNUm;
+            }
+        }
+        
+        return false;
+    }
+    
+    
+    public function countFilms( array $parms = ['column' => 'film_id' , 'table' => 'film' ,'sql' => '' ] ){
+        
+        $db = BlockBuster\app\DB_Connect::GetInstance();
+        
+        $column = isset( $parms['column'] ) ? $parms['column'] : 'film_id';
+        $table = isset( $parms['table'] ) ? $parms['table'] : 'film';
+        
+        $sql = "SELECT COUNT($column) AS count FROM $table ";
+        
+        if( array_key_exists('sql', $parms) && $parms['sql'] !== '' ){
+            
+            $sql .= $parms['sql'];
+        }
+        
+        
+        $sth = $db->conn->query( $sql );
+        
+        $films_count = $sth->fetch( PDO::FETCH_ASSOC );
+        
+        
+        return $films_count['count'];
     }
     
 

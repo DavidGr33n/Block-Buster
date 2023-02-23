@@ -16,6 +16,7 @@ class Router {
     public $ControllerInfo;
     public $Controller;
     public $urlParm = false;
+    public $query_parms_arr = null;
 
 
     public function get(string $path, $handler): void {
@@ -42,6 +43,20 @@ class Router {
         $this->method = $_SERVER['REQUEST_METHOD'];
         
         $callBack = null;
+        
+        
+        //Check if query string exists
+        if( isset( $requestUrl['query'] ) ){
+            
+            $query_parms_arr = array();
+            
+            parse_str($requestUrl['query'], $query_parms_arr);
+            
+            if( !empty($query_parms_arr) && array_key_exists( 'p' , $query_parms_arr) ){
+                
+                $this->query_parms_arr = $query_parms_arr;
+            }
+        }
         
         
         foreach ($this->handlers as $config){

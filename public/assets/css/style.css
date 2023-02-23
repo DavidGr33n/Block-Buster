@@ -37,8 +37,10 @@ a , a:visited{
     margin-top: 148px;
     width: 80%;
     background-color: #f3f3f3;
-    height: 100%;
     padding: 5px;
+    position: relative;
+    padding-bottom: 70px;
+    min-height: calc(100% - 65px);
 }
 
 nav#mainNav{
@@ -47,6 +49,7 @@ nav#mainNav{
     top: 0;
     height: 148px;
     background-color: #feca52;
+    z-index: 10;
 }
 
 #nav-wrraper{
