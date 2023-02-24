@@ -33,8 +33,6 @@ class Main_Controller extends BlockBuster\app\Controller {
     public function GetMovies(){
         
         $db = BlockBuster\app\DB_Connect::GetInstance();
-        $page_num = $this->getPageNum();
-        $pagination = null;
         
         $sql = "SELECT film.* , category.name AS catName "     //selects all films with their category names
              . "FROM film JOIN film_category "
@@ -43,38 +41,10 @@ class Main_Controller extends BlockBuster\app\Controller {
              . "ORDER BY `film`.`film_id` ASC ";
         
         
-        if( $page_num !== false ){
-            
-            $sql .= "LIMIT " . self::PAGINATION_STEP 
-                  . " OFFSET " . ( ($page_num - 1) * self::PAGINATION_STEP );
-            
-        }else{
-            
-            $sql .= "LIMIT " . self::PAGINATION_STEP;
-            $page_num = 1;
-        }
+        $res = $this->prepere_pagination( [ 'results_sql' => $sql ] );
         
-        
-        $films_count = $this->countFilms();
-            
-        if( $films_count > 0 ){
-                
-            $total_pages = ceil( $films_count/self::PAGINATION_STEP ); //Rounds up floats to get total pages count
-            
-            if( $total_pages > 1 && $page_num <= $total_pages ){
-                
-                //set next page and previous page for the pagniation feature
-                $next_page = ($page_num + 1) > $total_pages ? null : $page_num + 1;
-                
-                $previous_page = ($page_num - 1) < 1 ? null : $page_num - 1;
-                
-                $pagination = [ 'next' => $next_page ,
-                                'previous' => $previous_page, 
-                                'this' => $page_num,
-                                'total' => $total_pages   
-                ];
-            }
-        }
+        $sql = $res['results_sql'];
+        $pagination = $res['pagination'];
         
         
         $movies = $db->conn->query($sql , PDO::FETCH_ASSOC)->fetchAll();
@@ -82,7 +52,10 @@ class Main_Controller extends BlockBuster\app\Controller {
         
         if( $pagination !== null ){
             
+            $url_base = DOMAIN . ltrim(self::$router->requestPath, '/');
+            
             $movies['pagination'] = $pagination;
+            $movies['url_base'] = $url_base;
         }
         
         
@@ -155,7 +128,23 @@ class Main_Controller extends BlockBuster\app\Controller {
         $sql = "SELECT film.* FROM film "
              . "JOIN film_category ON film.film_id = film_category.film_id "
              . "JOIN category ON film_category.category_id = category.category_id "
-             . "WHERE category.category_id = :catid";
+             . "WHERE category.category_id = :catid ";
+        
+        
+        $count_arr = ['column' => 'film.film_id' , 
+                      'table' => 'film' ,
+                      'sql' => 'JOIN film_category ON film.film_id = film_category.film_id '
+                             . 'JOIN category ON film_category.category_id = category.category_id '
+                             . 'WHERE category.category_id = ' . $catId . ' ' 
+                     ];
+        
+        
+        $res = $this->prepere_pagination( [ 'results_sql' => $sql , 'count_parm_arr' => $count_arr ] );
+        
+        
+        $sql = $res['results_sql'];
+        $pagination = $res['pagination'];
+        
         
         $sth = $db->conn->prepare( $sql );
         if( $sth->execute( [ 'catid' => $catId ] ) ){
@@ -164,6 +153,17 @@ class Main_Controller extends BlockBuster\app\Controller {
         }
         
         $movies[] = $catName;
+        
+        
+        if( $pagination !== null ){
+            
+            $url_base = DOMAIN . ltrim(self::$router->requestPath, '/');
+            
+            $movies['pagination'] = $pagination;
+            $movies['url_base'] = $url_base;
+        }
+        
+        
         
         $this->VIEWER->RenderViewFrame( 'filmByCategory.php' , $movies  );
     }
@@ -228,6 +228,53 @@ class Main_Controller extends BlockBuster\app\Controller {
         return $films_count['count'];
     }
     
+    
+    public function prepere_pagination( array $parms = [ 'results_sql' => 'SELECT * FROM film '  ] ){
+        
+        $page_num = $this->getPageNum();
+        $pagination = null;
+        $sql = $parms['results_sql'];
+        
+        
+        if( $page_num !== false ){
+            
+            $sql .= "LIMIT " . self::PAGINATION_STEP 
+                 . " OFFSET " . ( ($page_num - 1) * self::PAGINATION_STEP );
+            
+        }else{
+            
+            $sql .= "LIMIT " . self::PAGINATION_STEP;
+            $page_num = 1;
+        }
+        
+        
+        $films_count = array_key_exists('count_parm_arr', $parms) ? 
+                       $this->countFilms( $parms['count_parm_arr'] ) : 
+                       $this->countFilms()  ;
+        
+        
+        if( $films_count > 0 ){
+                
+            $total_pages = ceil( $films_count/self::PAGINATION_STEP ); //Rounds up floats to get total pages count
+            
+            if( $total_pages > 1 && $page_num <= $total_pages ){
+                
+                //set next page and previous page for the pagniation feature
+                $next_page = ($page_num + 1) > $total_pages ? null : $page_num + 1;
+                
+                $previous_page = ($page_num - 1) < 1 ? null : $page_num - 1;
+                
+                $pagination = [ 'next' => $next_page ,
+                                'previous' => $previous_page, 
+                                'this' => $page_num,
+                                'total' => $total_pages   
+                ];
+            }
+        }
+        
+        return [ 'results_sql' => $sql , 'pagination' => $pagination ];
+    }
+
 
     public function test(){
         var_dump( self::$router->requestPath );

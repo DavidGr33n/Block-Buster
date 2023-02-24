@@ -106,20 +106,20 @@ class Viewer {
     }
     
     
-    public function paginate( $pages_info_arr ) {
+    public function paginate( $pages_info_arr , $url ) {
         
         echo '<div class="pagination__wrapper"><ul class="pagination">';
         
         
         if( $pages_info_arr['previous'] !== null ){
                 
-            echo'<li><a href="' . DOMAIN . 'movies?p=' . $pages_info_arr['previous']. '">'
+            echo'<li><a href="' . $url . '?p=' . $pages_info_arr['previous']. '">'
               . '<button class="prev" title="previous page">&#10094;</button></a></li>';
         }
         
         
         $is_active_class = $pages_info_arr['this'] === 1 ? 'class="active"' : '';
-        echo'<li><a href="' . DOMAIN . 'movies?p=1">'
+        echo'<li><a href="' . $url . '?p=1">'
           . '<button ' . $is_active_class . ' title="First page - page 1">1</button></a></li>';
         
         
@@ -137,7 +137,7 @@ class Viewer {
                 
                 $is_active_class = $pages_info_arr['this'] === $t  ? 'class="active"' : '';
                 
-                echo'<li><a href="' . DOMAIN . 'movies?p=' . $t . '">'
+                echo'<li><a href="' . $url . '?p=' . $t . '">'
                  . '<button ' . $is_active_class . ' title="page ' . $t . '">' . $t . '</button></a></li>';
             }
             
@@ -155,12 +155,12 @@ class Viewer {
                 //echo <.....>
                 
                 $is_active_class = $thisPage === 2 ? 'class="active"' : '';
-                echo'<li><a href="' . DOMAIN . 'movies?p=2"><button ' . $is_active_class . ' title="page 2">2</button></a></li>';
+                echo'<li><a href="' . $url . '?p=2"><button ' . $is_active_class . ' title="page 2">2</button></a></li>';
                 
                 $is_active_class = $thisPage === 3 ? 'class="active"' : '';
-                echo'<li><a href="' . DOMAIN . 'movies?p=3"><button ' . $is_active_class . ' title="page 3">3</button></a></li>';
+                echo'<li><a href="' . $url . '?p=3"><button ' . $is_active_class . ' title="page 3">3</button></a></li>';
                 
-                echo'<li><a href="' . DOMAIN . 'movies?p=4"><button title="page 4">4</button></a></li>';
+                echo'<li><a href="' . $url . '?p=4"><button title="page 4">4</button></a></li>';
                 echo'<li><span>...</span></li>';
                 
             } elseif ( $nextPage < $max  ){ 
@@ -172,9 +172,9 @@ class Viewer {
                 //echo <.....>
 
                 echo'<li><span>...</span></li>';
-                echo'<li><a href="' . DOMAIN . 'movies?p=' . $previousPage . '"><button title="page ' . $previousPage . '">' . $previousPage . '</button></a></li>';
-                echo'<li><a href="' . DOMAIN . 'movies?p=' . $thisPage . '"><button class="active" title="page ' . $thisPage . '">' . $thisPage . '</button></a></li>';
-                echo'<li><a href="' . DOMAIN . 'movies?p=' . $nextPage . '"><button title="page ' . $nextPage . '">' . $nextPage . '</button></a></li>';
+                echo'<li><a href="' . $url . '?p=' . $previousPage . '"><button title="page ' . $previousPage . '">' . $previousPage . '</button></a></li>';
+                echo'<li><a href="' . $url . '?p=' . $thisPage . '"><button class="active" title="page ' . $thisPage . '">' . $thisPage . '</button></a></li>';
+                echo'<li><a href="' . $url . '?p=' . $nextPage . '"><button title="page ' . $nextPage . '">' . $nextPage . '</button></a></li>';
                 
                 if( ($nextPage + 1) < $max   ){
                     
@@ -192,9 +192,9 @@ class Viewer {
                 $th1 = $previousPage -1;
                 
                 echo'<li><span>...</span></li>';
-                echo'<li><a href="' . DOMAIN . 'movies?p=' . $th1 . '"><button title="page ' . $th1  . '">' . $th1 . '</button></a></li>';
-                echo'<li><a href="' . DOMAIN . 'movies?p=' . $previousPage . '"><button title="page ' . $previousPage . '">' . $previousPage . '</button></a></li>';
-                echo'<li><a href="' . DOMAIN . 'movies?p=' . $thisPage . '"><button class="active" title="page ' . $thisPage . '">' . $thisPage . '</button></a></li>';
+                echo'<li><a href="' . $url . '?p=' . $th1 . '"><button title="page ' . $th1  . '">' . $th1 . '</button></a></li>';
+                echo'<li><a href="' . $url . '?p=' . $previousPage . '"><button title="page ' . $previousPage . '">' . $previousPage . '</button></a></li>';
+                echo'<li><a href="' . $url . '?p=' . $thisPage . '"><button class="active" title="page ' . $thisPage . '">' . $thisPage . '</button></a></li>';
                 
             }else{
                 
@@ -202,23 +202,23 @@ class Viewer {
                 $th2 = $previousPage -2;
                 
                 echo'<li><span>...</span></li>';
-                echo'<li><a href="' . DOMAIN . 'movies?p=' . $th2 . '"><button title="page ' . $th2  . '">' . $th2 . '</button></a></li>';
-                echo'<li><a href="' . DOMAIN . 'movies?p=' . $th1 . '"><button title="page ' . $th1  . '">' . $th1 . '</button></a></li>';
-                echo'<li><a href="' . DOMAIN . 'movies?p=' . $previousPage . '"><button title="page ' . $previousPage . '">' . $previousPage . '</button></a></li>';
+                echo'<li><a href="' . $url . '?p=' . $th2 . '"><button title="page ' . $th2  . '">' . $th2 . '</button></a></li>';
+                echo'<li><a href="' . $url . '?p=' . $th1 . '"><button title="page ' . $th1  . '">' . $th1 . '</button></a></li>';
+                echo'<li><a href="' . $url . '?p=' . $previousPage . '"><button title="page ' . $previousPage . '">' . $previousPage . '</button></a></li>';
             }
         }
         
         
         $is_active_class = $pages_info_arr['this'] == $pages_info_arr['total'] ? 'class="active"' : '';
         
-        echo'<li><a href="' . DOMAIN . 'movies?p=' . $pages_info_arr['total'] . '"><button ' . $is_active_class . ' title="Last page - page ' .
+        echo'<li><a href="' . $url . '?p=' . $pages_info_arr['total'] . '"><button ' . $is_active_class . ' title="Last page - page ' .
             $pages_info_arr['total'] . '">'. 
             $pages_info_arr['total'] . '</button></a></li>';
         
         
         if( $pages_info_arr['next'] !== null ){
                 
-            echo'<li><a href="' . DOMAIN . 'movies?p=' . $pages_info_arr['next'] . '"><button class="next" title="next page">&#10095;</button></a></li>';    
+            echo'<li><a href="' . $url . '?p=' . $pages_info_arr['next'] . '"><button class="next" title="next page">&#10095;</button></a></li>';    
         }
         
         

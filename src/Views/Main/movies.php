@@ -1,5 +1,10 @@
 <?php
 
+if(array_key_exists('url_base', $PARAMS) ){
+
+        $url = array_pop($PARAMS);
+}
+
 if(array_key_exists('pagination', $PARAMS) ){
     
     $pagination = array_pop($PARAMS);
@@ -31,7 +36,7 @@ foreach( $PARAMS as $movie ){
 
 if( isset($pagination) ){
     
-    $this->paginate( $pagination );
+    $this->paginate( $pagination , $url );
 }
 ?>
 
