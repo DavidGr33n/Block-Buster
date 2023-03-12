@@ -17,5 +17,11 @@
         <div class="nav-item">
             <a href="/mostrented">Most Rented</a>
         </div>
+        
+        <div id="search-bar-nav-wraper">
+            <form method="POST" action="/api/movies"> 
+                <input name="m_name" type="text" placeholder="Search...."/><button type="submit"><i class="fa fa-search"></i></button>
+            </form>
+        </div>
     </div>    
 </nav>

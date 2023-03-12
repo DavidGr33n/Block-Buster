@@ -17,6 +17,7 @@ class Router {
     public $Controller;
     public $urlParm = false;
     public $query_parms_arr = null;
+    public $POST_Data;
 
 
     public function get(string $path, $handler): void {
@@ -46,7 +47,7 @@ class Router {
         
         
         //Check if query string exists
-        if( isset( $requestUrl['query'] ) ){
+        if( isset( $requestUrl['query'] ) && $this->method === 'GET' ){
             
             $query_parms_arr = array();
             
@@ -56,6 +57,12 @@ class Router {
                 
                 $this->query_parms_arr = $query_parms_arr;
             }
+        }
+        
+        
+        if( $this->method === 'POST' && !empty( $_POST ) ){
+            
+            $POST_Data = $_POST;
         }
         
         
@@ -77,6 +84,7 @@ class Router {
                 $callBack = $config['handler'];
             }
         }
+        
         
         /*
          * If $callback is not given a value (anonymus function or controller name)

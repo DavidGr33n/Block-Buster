@@ -32,6 +32,11 @@ $router->get('/categories/{{category}}', 'Main@GetFilmsCategory' );
 $router->get('/mostrented', 'Main@GetMostRentedMovies');
 
 
+$router->post('/', 'Main@index' );
+
+
+$router->post('/movies', 'Main@index' );
+
 $router->setHandler404( function(){
     echo'<h1>Not Found Page!!</h1>';
 });
